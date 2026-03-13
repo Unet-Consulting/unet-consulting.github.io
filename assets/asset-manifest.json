@@ -1,16 +1,17 @@
 {
   "pictures": [
+    "hero-0.jpg",
     "hero-1.jpg",
-    "hero-2.jpg"
+    "hero-2.jpg",
+    "hero-3.jpg"
   ],
   "logos": [
-    "client-1.svg",
-    "client-2.png",
-    "client-3.svg",
-    "client-4.svg",
-    "client-5.webp",
-    "client-6.svg",
-    "client-7.png",
-    "client-8.png"
+    "airvent.svg",
+    "astra.svg",
+    "btf.png",
+    "gip.png",
+    "gov.svg",
+    "otcf.svg",
+    "undp.svg"
   ]
 }
