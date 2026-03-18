@@ -883,7 +883,15 @@
     window.addEventListener('hashchange', updateNavHighlight);
   }
 
+  function initCurrentYear() {
+    var year = String(new Date().getFullYear());
+    document.querySelectorAll('[data-current-year]').forEach(function (el) {
+      el.textContent = year;
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
+    initCurrentYear();
     initLangToggle();
     loadI18n();
     loadAssetManifest();
