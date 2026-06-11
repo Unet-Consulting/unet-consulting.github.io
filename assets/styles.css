@@ -981,6 +981,14 @@ body {
   max-width: none;
 }
 
+@media (min-width: 1100px) {
+
+  .team-roster,
+  .team-roster--core {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
 .team-roster--consultants .team-profile {
   width: 100%;
 }
@@ -998,7 +1006,21 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.16);
   background: linear-gradient(180deg, rgba(8, 14, 30, 0.78), rgba(10, 17, 36, 0.9));
   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.36);
+  cursor: pointer;
+  transition:
+    border-color 180ms ease-out,
+    box-shadow 180ms ease-out;
   animation: team-card-fade 560ms ease-out both;
+}
+
+.team-profile:hover {
+  border-color: rgba(96, 198, 242, 0.56);
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.42);
+}
+
+.team-profile:focus-visible {
+  outline: 2px solid #60c6f2;
+  outline-offset: 3px;
 }
 
 .team-roster .team-profile:nth-child(1) {
@@ -1069,16 +1091,150 @@ body {
 }
 
 .team-profile__role {
-  font-size: 0.75rem;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
+  position: relative;
+  padding-right: 1.5rem;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  letter-spacing: 0.04em;
   color: rgba(255, 255, 255, 0.72);
 }
 
+.team-profile__role::after {
+  content: "+";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  color: #60c6f2;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
 .team-profile__bio {
+  display: none;
   font-size: 0.88rem;
   line-height: 1.62;
   color: rgba(255, 255, 255, 0.84);
+}
+
+.team-roster--core .team-profile__bio {
+  display: block;
+}
+
+.team-profile-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(0);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 220ms ease-out,
+    backdrop-filter 220ms ease-out,
+    visibility 0s linear 220ms;
+}
+
+.team-profile-modal--visible {
+  backdrop-filter: blur(8px);
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.team-profile-modal[hidden] {
+  display: none;
+}
+
+.team-profile-modal__dialog {
+  position: relative;
+  width: min(720px, 100%);
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.2fr);
+  border: 1px solid rgba(96, 198, 242, 0.5);
+  border-radius: 20px;
+  background: linear-gradient(145deg, #0a1124, #111a34);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.62);
+  opacity: 0;
+  transform: translateY(18px) scale(0.96);
+  transition:
+    opacity 220ms ease-out,
+    transform 220ms ease-out;
+}
+
+.team-profile-modal--visible .team-profile-modal__dialog {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.team-profile-modal__image {
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
+  object-fit: cover;
+  object-position: top center;
+  border-radius: 19px 0 0 19px;
+}
+
+.team-profile-modal__content {
+  align-self: center;
+  display: grid;
+  gap: 0.9rem;
+  padding: 3rem 2rem 2rem;
+}
+
+.team-profile-modal__name {
+  color: #ffffff;
+  font-size: 1.35rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.team-profile-modal__role {
+  color: #60c6f2;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+}
+
+.team-profile-modal__bio {
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.team-profile-modal__close {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  z-index: 1;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 50%;
+  background: rgba(5, 6, 10, 0.72);
+  color: #ffffff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+.team-profile-modal__close:hover,
+.team-profile-modal__close:focus-visible {
+  border-color: #60c6f2;
+  color: #60c6f2;
+}
+
+body.team-profile-modal-open {
+  overflow: hidden;
 }
 
 /* Contact */
@@ -1401,6 +1557,11 @@ body {
   .client-logo-card {
     animation: none;
   }
+
+  .team-profile-modal,
+  .team-profile-modal__dialog {
+    transition: none;
+  }
 }
 
 @media (max-width: 640px) {
@@ -1528,6 +1689,25 @@ body {
 
   .team-roster--core .team-profile--lead {
     width: 100%;
+  }
+
+  .team-profile-modal {
+    padding: 1rem;
+  }
+
+  .team-profile-modal__dialog {
+    max-height: calc(100vh - 2rem);
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .team-profile-modal__image {
+    height: min(52vh, 390px);
+    min-height: 0;
+    border-radius: 19px 19px 0 0;
+  }
+
+  .team-profile-modal__content {
+    padding: 1.4rem;
   }
 
   .contact-map-card,

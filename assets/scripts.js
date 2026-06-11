@@ -465,6 +465,113 @@
     });
   }
 
+  function initTeamProfiles() {
+    var profiles = document.querySelectorAll('.team-profile');
+    if (!profiles.length) return;
+
+    var modal = document.createElement('div');
+    modal.className = 'team-profile-modal';
+    modal.hidden = true;
+    modal.innerHTML =
+      '<div class="team-profile-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="team-profile-modal-name" aria-describedby="team-profile-modal-bio">' +
+      '<button class="team-profile-modal__close" type="button" data-i18n-aria-label="team.profile.close" aria-label="Close">&times;</button>' +
+      '<img class="team-profile-modal__image" src="" alt="">' +
+      '<div class="team-profile-modal__content">' +
+      '<h2 class="team-profile-modal__name" id="team-profile-modal-name"></h2>' +
+      '<p class="team-profile-modal__role"></p>' +
+      '<p class="team-profile-modal__bio" id="team-profile-modal-bio"></p>' +
+      '</div>' +
+      '</div>';
+    document.body.appendChild(modal);
+
+    var modalImage = modal.querySelector('.team-profile-modal__image');
+    var modalName = modal.querySelector('.team-profile-modal__name');
+    var modalRole = modal.querySelector('.team-profile-modal__role');
+    var modalBio = modal.querySelector('.team-profile-modal__bio');
+    var closeButton = modal.querySelector('.team-profile-modal__close');
+    var modalTransitionDuration = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 220;
+    var activeProfile = null;
+    var closeTimer = null;
+
+    function finishClose() {
+      modal.hidden = true;
+      document.body.classList.remove('team-profile-modal-open');
+      closeTimer = null;
+
+      if (activeProfile) {
+        activeProfile.focus();
+        activeProfile = null;
+      }
+    }
+
+    function closeModal() {
+      if (modal.hidden || closeTimer) return;
+
+      modal.classList.remove('team-profile-modal--visible');
+      if (modalTransitionDuration === 0) {
+        finishClose();
+        return;
+      }
+
+      closeTimer = window.setTimeout(finishClose, modalTransitionDuration);
+    }
+
+    function openModal(profile) {
+      var image = profile.querySelector('.team-profile__image');
+      var name = profile.querySelector('.team-profile__name');
+      var role = profile.querySelector('.team-profile__role');
+      var bio = profile.querySelector('.team-profile__bio');
+      if (!image || !name || !role || !bio) return;
+
+      activeProfile = profile;
+      modalImage.src = image.currentSrc || image.src;
+      modalImage.alt = name.textContent.trim();
+      modalName.textContent = name.textContent;
+      modalRole.textContent = role.textContent;
+      modalBio.textContent = bio.textContent;
+      modal.hidden = false;
+      document.body.classList.add('team-profile-modal-open');
+      modal.getBoundingClientRect();
+      modal.classList.add('team-profile-modal--visible');
+      closeButton.focus();
+    }
+
+    closeButton.addEventListener('click', closeModal);
+    modal.addEventListener('click', function (event) {
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+    document.addEventListener('keydown', function (event) {
+      if (modal.hidden) return;
+
+      if (event.key === 'Escape') {
+        closeModal();
+      } else if (event.key === 'Tab') {
+        event.preventDefault();
+        closeButton.focus();
+      }
+    });
+
+    profiles.forEach(function (profile) {
+      var bio = profile.querySelector('.team-profile__bio');
+      if (!bio) return;
+
+      profile.setAttribute('role', 'button');
+      profile.setAttribute('tabindex', '0');
+      profile.setAttribute('aria-haspopup', 'dialog');
+
+      profile.addEventListener('click', function () {
+        openModal(profile);
+      });
+      profile.addEventListener('keydown', function (event) {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        openModal(profile);
+      });
+    });
+  }
+
   function initHomeSectionScroll() {
     if (!document.body.classList.contains('page--home')) return;
 
@@ -896,6 +1003,7 @@
     loadI18n();
     loadAssetManifest();
     initScrollReveal();
+    initTeamProfiles();
     initNavHighlight();
     initHomeSectionScroll();
   });
